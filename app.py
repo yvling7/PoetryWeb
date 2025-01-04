@@ -2,7 +2,11 @@ from flask import Flask, render_template, request
 from TangPoetryVisual import TangPoetryVisual
 import pandas as pd
 from utils.pagination import Pagination
-from EmotionAnalyzer import EmotionAnalyzer
+#from EmotionAnalyzer import EmotionAnalyzer
+from gensim.models import Word2Vec
+from word2vec import find_similar_words
+from SklearnModel import EmotionAnalyzer
+
 app = Flask(__name__)
 
 # 加载数据
@@ -12,6 +16,7 @@ poets_df = pd.read_csv('data/poets_df.csv', encoding='utf-8')
 poet_counts = pd.read_csv('data/poet_stats_cache.csv')
 vis = TangPoetryVisual()
 analyzer = EmotionAnalyzer()
+word2vec_model = Word2Vec.load('models/word_vectors.model')
 
 # 加载字频数据
 char_frequency = pd.read_csv('data/char_frequency.csv')
@@ -222,12 +227,36 @@ def sentiment():
     if request.method == 'POST':
         poem_text = request.form.get('poem_text', '')
         if poem_text:
-            result = analyzer.predict(poem_text)
+            result = analyzer.predict_sklearn(poem_text)
             return render_template('sentiment.html', 
                                 poem_text=poem_text,
                                 sentiment_result=result)
     
     return render_template('sentiment.html')
+
+@app.route('/similar_chars', methods=['GET', 'POST'])
+def similar_chars():
+    if request.method == 'POST':
+        char = request.form.get('char', '')
+        if char:
+            # 确保输入是单个汉字
+            char = char[0] if len(char) > 0 else ''
+            try:
+                # 获取相似的字
+                similar_results = find_similar_words(word2vec_model, char, topn=10)
+                return render_template('similar_chars.html',
+                                    char=char,
+                                    similar_results=similar_results,
+                                    error=None)
+            except KeyError:
+                # 处理输入字不在词向量模型中的情况
+                error = f'抱歉，未能找到与"{char}"相关的字'
+                return render_template('similar_chars.html',
+                                    char=char,
+                                    similar_results=None,
+                                    error=error)
+    
+    return render_template('similar_chars.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

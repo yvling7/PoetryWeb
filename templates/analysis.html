@@ -2,11 +2,14 @@
 
 {% block content %}
 <div class="container py-4">
-    <!-- 情感分析入口 - 调整后的样式 -->
-    <div class="sentiment-entry mb-5">
-        <div class="d-flex justify-content-center">
+    <!-- 功能入口区域 - 包含情感分析和相关字查询 -->
+    <div class="features-entry mb-5">
+        <div class="d-flex justify-content-center gap-4">
             <a href="/sentiment" class="btn btn-primary btn-lg px-4 py-3">
                 <i class="fas fa-heart me-2"></i> 诗词情感预测
+            </a>
+            <a href="/similar_chars" class="btn btn-success btn-lg px-4 py-3">
+                <i class="fas fa-font me-2"></i> 相关字查询
             </a>
         </div>
     </div>
@@ -313,14 +316,16 @@
 }
 
 .stat-label {
+    font-family: "黑体", "SimHei", "STHeiti", sans-serif;
     color: #666;
-    font-size: 0.9rem;
+    font-size: 1.1rem;
     margin-bottom: 0.5rem;
 }
 
 .stat-value {
+    font-family: "楷体", "KaiTi", "STKaiti", serif;
     color: #333;
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     font-weight: 600;
 }
 
@@ -341,10 +346,14 @@
 }
 
 .chart-title {
-    color: #333;
-    font-size: 1.2rem;
-    margin-bottom: 1rem;
+    font-family: "黑体", "SimHei", "STHeiti", sans-serif;
+    color: #000;
+    font-size: 1.8rem;
+    font-weight: 600;
     text-align: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #333;
 }
 
 .chart-container {
@@ -381,8 +390,9 @@
 
 /* 主标题样式 */
 .analysis-title {
+    font-family: "黑体", "SimHei", "STHeiti", sans-serif;
     color: #000000;
-    font-size: 30px;
+    font-size: 1.6rem;
     font-weight: 600;
     margin-bottom: 1rem;
     border-bottom: 2px solid #333;
@@ -392,8 +402,9 @@
 
 /* 子标题样式 */
 .section-title {
+    font-family: "黑体", "SimHei", "STHeiti", sans-serif;
     color: #000;
-    font-size: 25px;
+    font-size: 1.4rem;
     font-weight: 600;
     margin: 1rem 0 0.6rem 0;
 }
@@ -412,12 +423,13 @@
 
 /* 添加到已有的 style 标签中 */
 .bold-text {
-    font-weight: bold;
+    font-family: "楷体", "KaiTi", "STKaiti", serif;
+    font-weight: normal;
     color: #000;
-    display: block;  /* 使每个span独占一行 */
-    margin-bottom: 0.6rem;  /* 添加底部间距 */
-    line-height: 1.5;  /* 行高 */
-    font-size: 21px;
+    display: block;
+    margin-bottom: 0.8rem;
+    line-height: 1.6;
+    font-size: 1.2rem;
 }
 
 /* 添加到现有样式中 */
@@ -441,6 +453,33 @@
 
 .sentiment-entry .fas {
     font-size: 1.3rem;
+}
+
+/* 添加功能入口区域的样式 */
+.features-entry {
+    text-align: center;
+    padding: 1rem 0;
+    margin: 1rem 0 2rem;
+}
+
+.features-entry .btn {
+    font-size: 1.2rem;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.features-entry .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.features-entry .fas {
+    font-size: 1.3rem;
+}
+
+.gap-4 {
+    gap: 1.5rem;
 }
 </style>
 
@@ -474,6 +513,31 @@ document.addEventListener('DOMContentLoaded', function() {
                 'yaxis.autorange': true
             });
         });
+    });
+});
+</script>
+
+<!-- 在现有内容之后添加回到顶部按钮 -->
+<button id="back-to-top" style="display: none; position: fixed; bottom: 60px; right: 20px; padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+    回到顶部
+</button>
+
+<script>
+// 显示或隐藏回到顶部按钮
+window.addEventListener('scroll', function() {
+    const button = document.getElementById('back-to-top');
+    if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
+        button.style.display = 'block';
+    } else {
+        button.style.display = 'none';
+    }
+});
+
+// 点击按钮时平滑滚动到顶部
+document.getElementById('back-to-top').addEventListener('click', function() {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
     });
 });
 </script>

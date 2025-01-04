@@ -5,20 +5,20 @@
 
 <div class="poets-container">
     <!-- 统计信息 -->
-    <div class="stats-card mb-4">
-        <h3 class="text-center mb-3">诗词统计</h3>
-        <div class="row text-center">
-            <div class="col-md-4">
-                <h4>{{ total_poets }}</h4>
-                <p>诗人总数</p>
+    <div class="stats-overview mb-4">
+        <h3 class="text-center mb-4">唐诗统计概览</h3>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-label">总诗人数</div>
+                <div class="stat-value">{{ total_poets }}</div>
             </div>
-            <div class="col-md-4">
-                <h4>{{ total_poems }}</h4>
-                <p>诗词总数</p>
+            <div class="stat-item">
+                <div class="stat-label">总诗歌数</div>
+                <div class="stat-value">{{ total_poems }}</div>
             </div>
-            <div class="col-md-4">
-                <h4>{{ avg_poems }}</h4>
-                <p>平均作品数</p>
+            <div class="stat-item">
+                <div class="stat-label">平均每人作品数</div>
+                <div class="stat-value">{{ avg_poems }}</div>
             </div>
         </div>
     </div>
@@ -28,8 +28,14 @@
     <div class="poet-card">
         <div class="poet-info">
             <h3>{{ poet.name }}</h3>
-            <p>作品数量: {{ poet.poem_count }}</p>
-            <p>常用字: {{ poet.top_chars|join(', ') }}</p>
+            <p class="poem-count">作品数量: {{ poet.poem_count }}</p>
+            <p class="top-chars">
+                常用字: 
+                {% for char in poet.top_chars %}
+                    <span class="rainbow-char char-{{ loop.index }}">{{ char }}</span>
+                    {% if not loop.last %}, {% endif %}
+                {% endfor %}
+            </p>
         </div>
         <div class="poet-actions">
             <a href="{{ url_for('poet_detail', poet=poet.name) }}" class="btn btn-primary">查看作品</a>
@@ -66,63 +72,136 @@
     </nav>
     {% endif %}
 </div>
-poet-actions<style>
-    .poets-container {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        border-radius: 15px;
-        padding: 2rem;
-        margin: 2rem auto;
-        max-width: 1200px;
-    }
 
-    .poet-card {
-        background: rgba(255, 255, 255, 0.15);
-        backdrop-filter: blur(5px);
-        border-radius: 10px;
-        padding: 1.5rem;
-        margin-bottom: 1rem;
-        transition: all 0.3s ease;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
+<style>
+.stats-overview {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 2rem;
+}
 
-    .poet-card:hover {
-        background: rgba(255, 255, 255, 0.25);
-        transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    }
+.stats-overview h3 {
+    font-family: "黑体", "SimHei", "STHeiti", sans-serif;
+    font-size: 1.8rem;
+    color: #333;
+}
 
-    .poet-info {
-        flex-grow: 1;
-    }
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
 
-    .poet-name {
-        font-size: 1.25rem;
-        color: #333;
-        margin-bottom: 0.5rem;
-    }
+.stat-item {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 1.5rem;
+    border-radius: 10px;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
 
-    .poet-stats {
-        color: #666;
-        font-size: 0.9rem;
-    }
+.stat-item:hover {
+    transform: translateY(-5px);
+}
 
-    .pagination {
-        margin-top: 2rem;
-        justify-content: center;
-    }
+.stat-label {
+    font-family: "黑体", "SimHei", "STHeiti", sans-serif;
+    color: #666;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
 
-    .page-link {
-        background: rgba(255, 255, 255, 0.2);
-        border-color: rgba(255, 255, 255, 0.3);
-        color: #333;
-    }
+.stat-value {
+    font-family: "楷体", "KaiTi", "STKaiti", serif;
+    color: #333;
+    font-size: 1.8rem;
+    font-weight: 600;
+}
 
-    .page-link:hover {
-        background: rgba(255, 255, 255, 0.3);
-    }
+.poet-card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(5px);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.poet-card:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.poet-info {
+    flex-grow: 1;
+}
+
+.poet-name {
+    font-size: 1.25rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.poet-stats {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.pagination {
+    margin-top: 2rem;
+    justify-content: center;
+}
+
+.page-link {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #333;
+}
+
+.page-link:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.poet-info h3 {
+    font-family: "黑体", "SimHei", "STHeiti", sans-serif;
+    font-size: 1.6rem;
+    color: #333;
+    margin-bottom: 0.8rem;
+}
+
+.poem-count {
+    font-family: "黑体", "SimHei", "STHeiti", sans-serif;
+    font-size: 1.1rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.top-chars {
+    font-family: "黑体", "SimHei", "STHeiti", sans-serif;
+    font-size: 1.1rem;
+    color: #333;
+}
+
+/* 彩虹色常用字 - 水墨风格配色 */
+.rainbow-char {
+    font-family: "黑体", "SimHei", "STHeiti", sans-serif;
+    font-size: 1.2rem;
+    font-weight: 600;
+    padding: 0 2px;
+}
+
+.char-1 { color: #8E354A; }  /* 浓蘇芳 */
+.char-2 { color: #E16B8C; }  /* 桃色 */
+.char-3 { color: #77428D; }  /* 江戸紫 */
+.char-4 { color: #005CAF; }  /* 瑠璃色 */
+.char-5 { color: #0D5661; }  /* 锖青磁 */
+
 </style>
 {% endblock %} 
