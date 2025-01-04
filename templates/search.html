@@ -1,0 +1,309 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="search-container">
+    <h2 class="search-title">唐诗可视化分析</h2>
+
+    <!-- 搜索表单 -->
+    <div class="search-form">
+        <form action="{{ url_for('search') }}" method="get">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="input-group" style="max-width: 800px; margin: 0 auto;">
+                        <input type="text" 
+                               name="q" 
+                               class="form-control" 
+                               value="{{ keyword }}" 
+                               placeholder="请输入关键词..."
+                               autocomplete="off"
+                               style="height: 46px; font-size: 16px;">
+                        <select name="type" 
+                                class="form-select" 
+                                style="width: 100px; height: 46px; font-size: 16px; padding: 0 10px;">
+                            <option value="all" {% if search_type == 'all' %}selected{% endif %}>全部</option>
+                            <option value="poet" {% if search_type == 'poet' %}selected{% endif %}>诗人</option>
+                            <option value="title" {% if search_type == 'title' %}selected{% endif %}>标题</option>
+                            <option value="content" {% if search_type == 'content' %}selected{% endif %}>内容</option>
+                        </select>
+                        <button type="submit" 
+                                class="btn btn-search"
+                                style="height: 46px; padding: 0 20px; font-size: 16px;">
+                            <i class="fas fa-search"></i> 搜索
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    {% if keyword %}
+        <div class="search-results-info">
+            <i class="fas fa-info-circle"></i> 找到 {{ total_results }} 条相关结果
+        </div>
+
+        {% if poet_info %}
+        <div class="poet-info">
+            {% for poet in poet_info %}
+            <div class="poet-card">
+                <h4 class="poem-title">
+                    <i class="fas fa-user-circle"></i> {{ poet.poets }}
+                </h4>
+                <div class="poet-details">
+                    {% if poet.birth_year != -1 and poet.death_year != -1 %}
+                    <p class="poem-author">
+                        <i class="fas fa-calendar-alt"></i> 
+                        生卒年：{{ poet.birth_year }} - {{ poet.death_year }}
+                    </p>
+                    {% endif %}
+                    <p class="poem-author">
+                        <i class="fas fa-clock"></i> 
+                        时期：<span class="badge">{{ poet.period }}</span>
+                    </p>
+                </div>
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-value">{{ poet.count }}</div>
+                        <div>总作品数</div>
+                    </div>
+                    {% if poet_counts.get(poet.poets) %}
+                    <div class="stat-item">
+                        <div class="stat-value">{{ poet_counts.get(poet.poets) }}</div>
+                        <div>匹配作品数</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if results %}
+        <div class="search-results">
+            {% for poem in results %}
+            <div class="poem-card">
+                <h3 class="poem-title">{{ poem.title }}</h3>
+                <p class="poem-author">
+                    <i class="fas fa-user"></i> {{ poem.poets }}
+                </p>
+                <div class="poem-content">{{ poem.content }}</div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="search-results-info">
+            <i class="fas fa-exclamation-circle"></i> 未找到相关结果
+        </div>
+        {% endif %}
+
+        {% if pagination %}
+        <div class="pagination">
+            {% if pagination.has_prev %}
+                <a href="{{ url_for('search', q=keyword, type=search_type, page=pagination.page - 1) }}">&laquo; 上一页</a>
+            {% endif %}
+            
+            {% for page in pagination.iter_pages() %}
+                {% if page %}
+                    {% if page != pagination.page %}
+                        <a href="{{ url_for('search', q=keyword, type=search_type, page=page) }}">{{ page }}</a>
+                    {% else %}
+                        <strong>{{ page }}</strong>
+                    {% endif %}
+                {% else %}
+                    <span>...</span>
+                {% endif %}
+            {% endfor %}
+            
+            {% if pagination.has_next %}
+                <a href="{{ url_for('search', q=keyword, type=search_type, page=pagination.page + 1) }}">下一页 &raquo;</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    {% endif %}
+</div>
+<style>
+    .search-container {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 2rem;
+        margin: 2rem auto;
+        max-width: 1200px;
+    }
+
+    .search-form {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(5px);
+        border-radius: 10px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .search-title {
+        color: #333;
+        text-align: center;
+        margin-bottom: 1.5rem;
+        font-size: 2rem;
+    }
+
+    .poet-card {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(5px);
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .poet-card:hover {
+        background: rgba(255, 255, 255, 0.25);
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .poem-card {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(5px);
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .poem-card:hover {
+        background: rgba(255, 255, 255, 0.25);
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .poem-title {
+        font-size: 1.25rem;
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+
+    .poem-author {
+        color: #666;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .poem-content {
+        color: #444;
+        line-height: 1.6;
+        white-space: pre-wrap;
+    }
+
+    .stats {
+        display: flex;
+        justify-content: space-around;
+        text-align: center;
+        padding: 1rem 0;
+    }
+
+    .stat-item {
+        color: #666;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .search-results-info {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        text-align: center;
+        color: #333;
+    }
+
+    .badge {
+        background: rgba(0, 0, 0, 0.1);
+        color: #333;
+        padding: 0.5em 1em;
+        border-radius: 20px;
+    }
+
+    .form-control, .form-select {
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: #333;
+    }
+
+    .form-control:focus, .form-select:focus {
+        background: rgba(255, 255, 255, 0.3);
+        box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-search {
+        background: rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: #333;
+        transition: all 0.3s ease;
+    }
+
+    .btn-search:hover {
+        background: rgba(0, 0, 0, 0.2);
+        transform: translateY(-1px);
+    }
+
+    .chart-card {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(5px);
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .chart-card:hover {
+        background: rgba(255, 255, 255, 0.25);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<!-- 添加 Plotly.js -->
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<script>
+// 渲染图表
+document.addEventListener('DOMContentLoaded', function() {
+    // 获取并渲染时期分布图
+    fetch('/api/visualization/period')
+        .then(response => response.json())
+        .then(data => {
+            Plotly.newPlot('period-chart', data);
+        });
+    
+    // 获取并渲染体裁分布图
+    fetch('/api/visualization/type')
+        .then(response => response.json())
+        .then(data => {
+            Plotly.newPlot('type-chart', data);
+        });
+    
+    // 获取并渲染字频统计图
+    fetch('/api/visualization/char-frequency')
+        .then(response => response.json())
+        .then(data => {
+            Plotly.newPlot('char-frequency-chart', data);
+        });
+    
+    // 获取并渲染长度分布图
+    fetch('/api/visualization/length')
+        .then(response => response.json())
+        .then(data => {
+            Plotly.newPlot('length-distribution-chart', data);
+        });
+});
+</script>
+
+<!-- 引入 Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+{% endblock %} 

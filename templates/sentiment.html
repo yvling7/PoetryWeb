@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid py-5">
+    <div class="row justify-content-center">
+        <!-- 左侧输入区域 -->
+        <div class="col-lg-8 col-md-10 mb-4">
+            <div class="input-section">
+                <h2 class="text-center mb-5 display-4">唐诗情感预测</h2>
+                <form method="POST" action="{{ url_for('sentiment') }}" class="sentiment-form">
+                    <div class="form-group">
+                        <label for="poem-input" class="form-label h5 mb-3">请输入诗句：</label>
+                        <textarea 
+                            class="form-control form-control-lg mb-4" 
+                            id="poem-input" 
+                            name="poem_text" 
+                            rows="8" 
+                            placeholder="在此输入诗句..."
+                            required>{{ poem_text if poem_text else '' }}</textarea>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary btn-lg px-5 py-3">
+                            <i class="fas fa-magic me-2"></i>分析情感
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 右侧结果显示区域 -->
+        <div class="col-lg-3 col-md-10">
+            {% if sentiment_result %}
+            <div class="result-section h-100">
+                <div class="result-card h-100">
+                    <h3 class="text-center mb-5">情感分析结果</h3>
+                    <div class="result-content">
+                        <div class="sentiment-result mb-5">
+                            <div class="score-label h4">情感类型</div>
+                            <div class="score-value display-4 my-4">
+                                {{ sentiment_result.label }}
+                            </div>
+                        </div>
+                        <div class="confidence-score">
+                            <div class="score-label h4">预测置信度</div>
+                            <div class="score-value display-4 my-4">
+                                {{ "%.2f"|format(sentiment_result.score * 100) }}%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.sentiment-form {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(12px);
+    padding: 3rem;
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    height: 100%;
+}
+
+.form-control {
+    background: rgba(255, 255, 255, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #333;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    font-size: 1.1rem;
+}
+
+.form-control:focus {
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.2);
+    background: rgba(255, 255, 255, 0.35);
+}
+
+.btn-primary {
+    border-radius: 50px;
+    transition: all 0.3s ease;
+    font-size: 1.2rem;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.result-card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(12px);
+    padding: 3rem;
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.result-content {
+    text-align: center;
+}
+
+.sentiment-result, .confidence-score {
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    margin-bottom: 2rem;
+}
+
+.score-label {
+    color: #666;
+    margin-bottom: 1rem;
+}
+
+.score-value {
+    font-weight: 600;
+    color: #333;
+}
+
+@media (max-width: 991.98px) {
+    .result-section {
+        margin-top: 2rem;
+    }
+    
+    .sentiment-form, .result-card {
+        padding: 2rem;
+    }
+}
+</style>
+{% endblock %} 

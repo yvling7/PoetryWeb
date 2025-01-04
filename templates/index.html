@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}首页{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1>全唐诗</h1>
+    <p>收录{{ total_poems }}首唐诗，{{ total_poets }}位诗人</p>
+    <a href="/poems" class="btn">点击浏览</a>
+</div>
+
+<section class="random-poem">
+    <h2>每日一诗</h2>
+    <div class="poem-card">
+        <h3>{{ random_poem.title }}</h3>
+        <p class="poet">{{ random_poem.poets }}</p>
+        <p class="content">{{ random_poem.content }}</p>
+    </div>
+</section>
+
+<section class="features">
+    <div class="feature-card">
+        <h3>诗人介绍</h3>
+        <p>了解诗人生平事迹</p>
+        <a href="/poets" class="btn">浏览诗人</a>
+    </div>
+    
+    <div class="feature-card">
+        <h3>统计分析</h3>
+        <p>探索唐诗数据特征</p>
+        <a href="/analysis" class="btn">查看分析</a>
+    </div>
+    <div class="feature-card">
+        <h3>诗歌检索</h3>
+        <p>快速查找心仪的诗歌</p>
+        <a href="/search" class="btn">开始检索</a>
+    </div>
+</section>
+{% endblock %} 

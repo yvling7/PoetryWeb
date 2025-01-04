@@ -1,0 +1,480 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- 情感分析入口 - 调整后的样式 -->
+    <div class="sentiment-entry mb-5">
+        <div class="d-flex justify-content-center">
+            <a href="/sentiment" class="btn btn-primary btn-lg px-4 py-3">
+                <i class="fas fa-heart me-2"></i> 诗词情感预测
+            </a>
+        </div>
+    </div>
+    
+    <!-- 基础统计信息 -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="stats-overview">
+                <h3 class="text-center mb-4">唐诗统计概览</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">总诗人数</div>
+                        <div class="stat-value">{{ stats.total_poets }}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">总诗歌数</div>
+                        <div class="stat-value">{{ stats.total_poems }}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">平均每人作品数</div>
+                        <div class="stat-value">{{ stats.avg_poems }}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">平均诗歌长度</div>
+                        <div class="stat-value">{{ stats.avg_length }}字</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- 时期分布 -->
+        <div class="col-md-6 mb-4">
+            <div class="chart-card">
+                <h4 class="chart-title">时期分布</h4>
+                <div id="period-chart" class="chart-container"></div>
+                <div class="chart-description">
+                    <div class="analysis-details">
+                        <h5 class="analysis-title">数据分布概述</h5>
+                        <h6 class="section-title">主要时间段：</h6>
+                        <span class="bold-text">整个唐代的诗歌比例占据了84.4%，是图中最主要的部分（深蓝色）。</span>
+                        <span class="bold-text">其余四个时间段（初唐、盛唐、中唐、晚唐）则分别占较小比例。</span>
+                        
+                        <h6 class="section-title">各时间段的具体比例：</h6>
+                        <span class="bold-text">初唐：占4.01%（浅蓝色），表明初唐的诗歌数量相对较少。</span>
+                        <span class="bold-text">盛唐：占2.85%（绿色），尽管盛唐被认为是诗歌的鼎盛时期，比例并不高。</span>
+                        <span class="bold-text">中唐：占5.08%（灰色），显示中唐时期的诗歌数量略高于盛唐和初唐。</span>
+                        <span class="bold-text">晚唐：占3.66%（黄色），晚唐诗歌的比例略低于中唐和初唐，但仍高于盛唐。</span>
+
+                        <h6 class="section-title">观察与推测：</h6>
+                        <span class="bold-text">数据分布的不均衡性：中唐的诗歌比例稍高，可能反映了中唐时期诗歌的繁荣程度。</span>
+                        <span class="bold-text">盛唐的诗歌比例偏低，可能是由于盛唐诗人以质取胜，数量上并未占绝对优势。</span>
+                        <span class="bold-text">唐代整体高比例的原因可能是囊括了没有明确分期的唐代诗歌。</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 诗歌体裁分布 -->
+        <div class="col-md-6 mb-4">
+            <div class="chart-card">
+                <h4 class="chart-title">诗歌体裁分布</h4>
+                <div id="type-chart" class="chart-container"></div>
+                <div class="chart-description">
+                    <div class="analysis-details">
+                        <h5 class="analysis-title">数据分布概述</h5>
+                        <h6 class="section-title">主要体裁：</h6>
+                        <span class="bold-text">五言律诗占比31.1%（浅蓝色），是占比最高的体裁，表明五言律诗在诗歌创作中具有核心地位。</span>
+                        <span class="bold-text">七言绝句占比17.8%（绿色），位居第二，显示出绝句这种短小精悍的诗歌形式同样受到欢迎。</span>
+                        <span class="bold-text">七言律诗占比16.5%（灰色），略低于七言绝句，说明七言律诗作为较为工整的诗歌形式，也具有重要地位。</span>
+                        <span class="bold-text">五言绝句占比15%（黄色），与七言律诗接近，表明五言绝句作为古体诗中的常见体裁有较大影响力。</span>
+
+                        <h6 class="section-title">较小比例的体裁：</h6>
+                        <span class="bold-text">五言古诗占比5.1%（蓝绿色），显示古体诗在整体诗歌体裁中的占比较小。</span>
+                        <span class="bold-text">七言古诗占比3.1%（橙色），说明七言古诗相较于五言古诗使用更少。</span>
+                        <span class="bold-text">乐府诗占比3.8%（粉紫色），反映出乐府诗作为一种传统民间和歌辞类体裁，在数据中占比相对较低。</span>
+                        <span class="bold-text">词占比1%（红色），为占比最低的类别。这可能是因为词作为宋代兴起的文学形式，在唐代中并未占据重要地位。</span>
+
+                        <h6 class="section-title">其他类别：</h6>
+                        <span class="bold-text">其他体裁占比3.9%（深紫色），表明有少量诗歌未归入主要类别中。</span>
+
+                        <h6 class="section-title">观察与推测：</h6>
+                        <span class="bold-text">五言律诗的核心地位：五言律诗占比最高，可能反映了这种形式在唐代的诗歌创作中最为成熟，且广受欢迎。它的对仗工整、声律和谐，使得五言律诗在宫廷诗歌及文人间成为主流。</span>
+                        <span class="bold-text">七言绝句的流行：七言绝句占比位居第二，说明这一短小精炼、便于传诵的形式深受喜爱，可能与其适合即兴表达和日常生活的记录有关。</span>
+                        <span class="bold-text">古体诗（五言古诗、七言古诗）的较低比例：古体诗相较于律诗和绝句占比更低，可能是因为古体诗更加自由、不受格律限制，创作的规范性较低。</span>
+                        <span class="bold-text">词和乐府诗占比较小：词作为后来兴起的文学形式，在唐代更多是作为附庸，未成为主流。乐府诗占比偏低可能是因为它以采集民间歌辞为主，在文人创作中所占比重有限。</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 诗人作品排名 -->
+        <div class="col-md-12 mb-4">
+            <div class="chart-card">
+                <h4 class="chart-title">诗人作品排名</h4>
+                <div id="top-poets-chart" class="chart-container" style="height: 800px;"></div>
+                <div class="chart-description">
+                    <div class="analysis-details">
+                        <h5 class="analysis-title">数据分布概述</h5>
+                        
+                        <h6 class="section-title">创作数量最高的诗人：</h6>
+                        <span class="bold-text">白居易以绝对优势占据首位，作品数量超过2500首，远远高于其他诗人，表明其在唐代诗歌创作中的重要地位和高产特性。</span>
+
+                        <h6 class="section-title">创作数量的第二梯队：</h6>
+                        <span class="bold-text">杜甫创作数量约为1500首，位居第二，与白居易有较大的差距。</span>
+                        <span class="bold-text">李白紧随其后，创作数量接近1000首。</span>
+                        <span class="bold-text">佚名（代表未署名诗作）也有接近1000首，说明在数据集中有不少诗歌无法明确归属于某一位具体诗人。</span>
+
+                        <h6 class="section-title">第三梯队：</h6>
+                        <span class="bold-text">齐己、刘禹锡、元稹等诗人的作品数量集中在500到700首之间。</span>
+                        <span class="bold-text">从李商隐到张籍，作品数量基本在300到500首之间。</span>
+
+                        <h6 class="section-title">观察与推测：</h6>
+                        <span class="bold-text">白居易的创作高产性：可能与其长期在仕途和民间生活的丰富经历有关，不仅创作了大量抒情诗，还撰写了许多针砭时弊的讽喻诗。</span>
+                        <span class="bold-text">杜甫与李白的对比：杜甫的创作数量高于李白，可能与其坎坷人生经历和持续创作的动力有关，而李白的创作以质取胜。</span>
+                        <span class="bold-text">佚名诗歌的重要性：佚名诗歌数量接近1000首，反映了唐代文人或民间的无署名作品在诗歌文化中的重要地位。</span>
+                        <span class="bold-text">作品数量与影响力：作品数量并不完全等同于文学成就，如杜甫、李白等人的文学影响力可能更为深远。</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 诗歌长度分布 -->
+        <div class="col-md-6 mb-4">
+            <div class="chart-card">
+                <h4 class="chart-title">诗歌长度分布</h4>
+                <div id="length-chart" class="chart-container"></div>
+                <div class="chart-description">
+                    <div class="analysis-details">
+                        <h5 class="analysis-title">数据分布概述</h5>
+                        
+                        <h6 class="section-title">主要分布区间：</h6>
+                        <span class="bold-text">41-60字区间最为集中，约13,364首诗歌，是分布的最高峰。</span>
+                        <span class="bold-text">21-40字和61-80字区间紧随其后，分别约有10,195首和10,613首诗歌。</span>
+
+                        <h6 class="section-title">次要分布区间：</h6>
+                        <span class="bold-text">81-100字和101-150字区间的作品数量明显减少，分别约有2,340首和2,906首。</span>
+                        <span class="bold-text">151-200字区间有约1,120首诗歌。</span>
+
+                        <h6 class="section-title">极端区间：</h6>
+                        <span class="bold-text">短诗（1-20字）数量最少，仅323首。</span>
+                        <span class="bold-text">长诗（201字以上）相对较少，201-300字约917首，300字以上约734首。</span>
+
+                        <h6 class="section-title">观察与推测：</h6>
+                        <span class="bold-text">中等长度主导：40-80字的诗歌占据主流，这与律诗、绝句等常见诗歌形式的标准字数相符。</span>
+                        <span class="bold-text">长篇诗歌稀少：超过100字的诗歌数量显著减少，反映出唐诗创作偏好简洁凝练的表达方式。</span>
+                        <span class="bold-text">极短诗歌罕见：20字以下的诗歌数量极少，说明过于简短的形式不是唐诗的主要创作方向。</span>
+                        <span class="bold-text">分布呈现明显的正态特征：以40-80字为中心的钟形分布，反映了唐诗在长度上的规范性。</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 各时期诗人数量 -->
+        <div class="col-md-6 mb-4">
+            <div class="chart-card">
+                <h4 class="chart-title">各时期诗人数量</h4>
+                <div id="poets-period-chart" class="chart-container"></div>
+                <div class="chart-description">
+                    <div class="analysis-details">
+                        <h5 class="analysis-title">数据分布概述</h5>
+                        
+                        <h6 class="section-title">主要时期分布：</h6>
+                        <span class="bold-text">唐代整体：约2,191位诗人，占据绝对多数（粉红色柱）。</span>
+
+                        <h6 class="section-title">其他时期分布：</h6>
+                        <span class="bold-text">中唐：约132位诗人（蓝色柱），为细分时期中人数最多的阶段。</span>
+                        <span class="bold-text">初唐：约104位诗人（绿色柱），数量仅次于中唐。</span>
+                        <span class="bold-text">晚唐：约95位诗人（橙色柱），排名第三。</span>
+                        <span class="bold-text">盛唐：约74位诗人（黑色柱），在细分时期中人数最少。</span>
+
+                        <h6 class="section-title">观察与推测：</h6>
+                        <span class="bold-text">数据分类特点：大部分诗人被笼统归类为"唐代"，这可能是由于史料记载不够详细或难以准确判定具体创作时期。</span>
+                        <span class="bold-text">中唐诗人数量最多：这可能反映了中唐时期文学创作的繁荣，以及这一时期相对完整的史料保存。</span>
+                        <span class="bold-text">盛唐诗人数量反差：虽然盛唐被认为是唐诗的黄金时期，但可考证的诗人数量反而最少，这或许说明盛唐诗歌更重质量而非数量。</span>
+                        <span class="bold-text">时期划分的局限性：大量诗人归类为笼统的"唐代"类别，表明精确划分诗人所属时期存在一定难度。</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 字频统计 -->
+        <div class="col-md-6 mb-4">
+            <div class="chart-card">
+                <h4 class="chart-title">字频统计</h4>
+                <div id="char-freq-chart" class="chart-container"></div>
+                <div class="chart-description">
+                    <div class="analysis-details">
+                        <h5 class="analysis-title">数据分布概述</h5>
+                        
+                        <h6 class="section-title">最高频字符（20000次以上）：</h6>
+                        <span class="bold-text">"人"字出现频率最高，约24,330次，反映了唐诗中对人事的关注。</span>
+                        <span class="bold-text">"山"字位居第二，约19,520次，展现了自然景物在唐诗中的重要地位。</span>
+
+                        <h6 class="section-title">高频字符（15000-20000次）：</h6>
+                        <span class="bold-text">"日"和"风"字分别约17,426次和16,957次，是描写自然现象的常用字。</span>
+
+                        <h6 class="section-title">中频字符（10000-15000次）：</h6>
+                        <span class="bold-text">自然意象："云"（14,986）、"春"（13,232）、"天"（12,932）、"月"（12,070）、"花"（12,252）等。</span>
+                        <span class="bold-text">时间词："时"（11,914）、"年"（10,097）等。</span>
+                        <span class="bold-text">情感意象："相"（11,722）、"长"（10,791）等。</span>
+
+                        <h6 class="section-title">观察与推测：</h6>
+                        <span class="bold-text">自然景物主导：高频字中自然景物词占据主要地位，反映了唐诗与自然的密切关系。</span>
+                        <span class="bold-text">人文关怀：最高频的"人"字体现了唐诗的人文情怀和对人事的关注。</span>
+                        <span class="bold-text">时空意识：与时间相关的字频较高，显示了唐诗对时间流逝的敏感。</span>
+                        <span class="bold-text">意象系统：这些高频字共同构成了唐诗典型的意象系统，涵盖自然、人事、时空等维度。</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 四季词频分布 -->
+        <div class="col-md-6 mb-4">
+            <div class="chart-card">
+                <h4 class="chart-title">四季词频分布</h4>
+                <div id="seasons-chart" class="chart-container"></div>
+                <div class="chart-description">
+                    <div class="analysis-details">
+                        <h5 class="analysis-title">数据分布概述</h5>
+                        
+                        <h6 class="section-title">主要分布特征：</h6>
+                        <span class="bold-text">春季词频最高：约13,132次，远超其他季节，占据绝对优势（绿色柱）。</span>
+                        <span class="bold-text">秋季次之：约9,768次，为第二常见的季节词（橙色柱）。</span>
+                        <span class="bold-text">夏季和冬季使用较少：夏季约1,439次（粉色柱），冬季约908次（蓝色柱）。</span>
+
+                        <h6 class="section-title">季节对比分析：</h6>
+                        <span class="bold-text">春秋主导：春、秋两季的词频合计超过22,900次，占据了绝大多数比例。</span>
+                        <span class="bold-text">夏冬罕见：夏、冬两季词频合计仅约2,347次，使用频率相对较低。</span>
+
+                        <h6 class="section-title">观察与推测：</h6>
+                        <span class="bold-text">春季偏好：春天作为万物复苏的季节，象征希望与生机，更容易激发诗人的创作灵感。</span>
+                        <span class="bold-text">秋季情思：秋天多愁善感的特质与诗歌的抒情特征相契合，因此也频繁出现。</span>
+                        <span class="bold-text">季节意象：春、秋两季具有丰富的文化意象和象征意义，这可能是它们使用频率较高的原因。</span>
+                        <span class="bold-text">气候影响：夏、冬两季的极端气候可能限制了诗人的创作活动，也可能影响了这两个季节词的使用频率。</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 颜色词系统分布 -->
+        <div class="col-md-6 mb-4">
+            <div class="chart-card">
+                <h4 class="chart-title">颜色词系统分布</h4>
+                <div id="colors-chart" class="chart-container"></div>
+                <div class="chart-description">
+                    <div class="analysis-details">
+                        <h5 class="analysis-title">数据分布概述</h5>
+                        
+                        <h6 class="section-title">主要颜色系统：</h6>
+                        <span class="bold-text">白色系：约24,288次，使用频率最高，可能与月光、雪、云等自然景象的描写有关。</span><br>
+                        <span class="bold-text">绿色系：约22,416次，位居第二，主要用于描写春季景色、山林vegetation等。</span><br>
+
+                        <h6 class="section-title">中频颜色系统：</h6>
+                        <span class="bold-text">红色系：约12,025次，多用于描写花卉、晚霞等。</span><br>
+                        <span class="bold-text">黄色系：约11,943次，常用于描写秋景、落叶等。</span><br>
+
+                        <h6 class="section-title">低频颜色系统：</h6>
+                        <span class="bold-text">黑色系：约6,056次，可能用于描写夜色、墨等。</span><br>
+                        <span class="bold-text">蓝色系：约3,265次，使用频率最低，主要用于描写天空、水面等。</span><br>
+
+                        <h6 class="section-title">其他：</h6>
+                        <span class="bold-text">其他颜色词：约19,976次，包含了不能明确归类的颜色描写。</span><br>
+
+                        <h6 class="section-title">观察与推测：</h6>
+                        <span class="bold-text">明亮色系主导：白色和绿色的高频使用，反映了唐诗对明亮、清新意象的偏好。</span><br>
+                        <span class="bold-text">自然景观影响：颜色词的使用频率可能与自然景观的描写密切相关。</span><br>
+                        <span class="bold-text">文化象征：某些颜色可能带有特定的文化象征意义，影响了它们的使用频率。</span><br>
+                        <span class="bold-text">季节特征：颜色词的使用可能与四季变化有关，如绿色与春季、黄色与秋季等。</span><br>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* 统计概览样式 */
+.stats-overview {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.stat-item {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 1.5rem;
+    border-radius: 10px;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.stat-item:hover {
+    transform: translateY(-5px);
+}
+
+.stat-label {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.stat-value {
+    color: #333;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+/* 图表卡片样式 */
+.chart-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 1.5rem;
+    height: auto;
+    min-height: 400px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.chart-card:hover {
+    transform: translateY(-5px);
+}
+
+.chart-title {
+    color: #333;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.chart-container {
+    height: 400px;
+    margin: 1rem 0;
+    padding-top: 20px;
+}
+
+.chart-description {
+    color: #666;
+    font-size: 0.9rem;
+    text-align: left;
+    margin-top: 1rem;
+    padding: 0 1rem;
+}
+
+/* 主要描述文字样式 */
+.main-desc {
+    font-size: 1.1rem;
+    color: #333;
+    font-weight: 500;
+    margin-bottom: 1.2rem;
+    text-align: center;
+}
+
+/* 分析详情样式 */
+.analysis-details {
+    margin-top: 1rem;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    font-size: 0.95rem;
+}
+
+/* 主标题样式 */
+.analysis-title {
+    color: #000000;
+    font-size: 30px;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #333;
+    padding-bottom: 0.5rem;
+    text-align: center;
+}
+
+/* 子标题样式 */
+.section-title {
+    color: #000;
+    font-size: 25px;
+    font-weight: 600;
+    margin: 1rem 0 0.6rem 0;
+}
+
+
+/* 图表标题样式 */
+.chart-title {
+    color: #000;
+    font-size: 25px;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #333;
+}
+
+/* 添加到已有的 style 标签中 */
+.bold-text {
+    font-weight: bold;
+    color: #000;
+    display: block;  /* 使每个span独占一行 */
+    margin-bottom: 0.6rem;  /* 添加底部间距 */
+    line-height: 1.5;  /* 行高 */
+    font-size: 21px;
+}
+
+/* 添加到现有样式中 */
+.sentiment-entry {
+    text-align: center;
+    padding: 1rem 0;
+    margin: 1rem 0 2rem;
+}
+
+.sentiment-entry .btn-primary {
+    font-size: 1.2rem;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.sentiment-entry .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.sentiment-entry .fas {
+    font-size: 1.3rem;
+}
+</style>
+
+<!-- 引入 Plotly.js -->
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 渲染所有图表
+    const charts = {{ charts | tojson | safe }};
+    const chartIds = {
+        'period-chart': charts.period_chart,
+        'type-chart': charts.type_chart,
+        'top-poets-chart': charts.top_poets_chart,
+        'length-chart': charts.length_chart,
+        'poets-period-chart': charts.poets_period_chart,
+        'char-freq-chart': charts.char_freq_chart,
+        'seasons-chart': charts.seasons_chart,
+        'colors-chart': charts.colors_chart
+    };
+
+    // 遍历所有图表并渲染
+    Object.entries(chartIds).forEach(([elementId, chartData]) => {
+        Plotly.newPlot(elementId, chartData);
+    });
+
+    // 监听窗口大小变化
+    window.addEventListener('resize', function() {
+        Object.keys(chartIds).forEach(function(chartId) {
+            Plotly.relayout(chartId, {
+                'xaxis.autorange': true,
+                'yaxis.autorange': true
+            });
+        });
+    });
+});
+</script>
+{% endblock %} 

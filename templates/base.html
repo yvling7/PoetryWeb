@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全唐诗 - {% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            background-image: url('/static/images/background.png'); /* 确保使用正确的图片路径 */
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* 确保内容容器不会覆盖背景 */
+        .container {
+            background: transparent;
+        }
+
+        /* 导航栏样式调整 */
+        .navbar {
+            background: rgba(255, 255, 255, 0.1) !important;
+            backdrop-filter: blur(10px);
+        }
+
+        /* 更紧凑的页脚样式 */
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            padding: 0.5rem; /* 减小内边距 */
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            font-size: 0.8rem; /* 减小字体大小 */
+            line-height: 1; /* 减小行高 */
+        }
+
+        /* 减小主内容的底部内边距 */
+        .main-content {
+            padding-bottom: 30px; /* 减小底部内边距 */
+        }
+
+        /* 页脚文字样式 */
+        .footer p {
+            margin: 0; /* 移除段落默认边距 */
+            color: rgba(0, 0, 0, 0.7); /* 稍微调暗文字颜色 */
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="/" class="logo">全唐诗</a>
+            <ul class="nav-links">
+                <li><a href="/">首页</a></li>
+                <li><a href="/poems">诗歌</a></li>
+                <li><a href="/poets">诗人</a></li>
+                <li><a href="/analysis">统计分析</a></li>
+                <li><a href="/sentiment">情感预测</a></li>
+                <li><a href="/search">搜索</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 全唐诗网站</p>
+        </div>
+    </footer>
+</body>
+</html> 

@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="poems-container">
+    <!-- 诗人基本信息部分 -->
+    <div class="poet-info-card mb-4">
+        <h2 class="poet-name">{{ basic_info.name }}</h2>
+        <div class="poet-meta">
+            <span class="poet-dynasty">朝代：{{ basic_info.dynasty }}</span>
+            <span class="poet-life">生卒：{{ basic_info.life_time }}</span>
+            <span class="poet-count">作品数：{{ basic_info.poem_count }}</span>
+        </div>
+        <div class="poet-description">
+            {{ basic_info.description }}
+        </div>
+    </div>
+
+    <!-- 诗歌列表部分 -->
+    <h3 class="mb-4">作品列表</h3>
+    {% for poem in poems %}
+    <div class="poem-card">
+        <h3 class="poem-title">{{ poem.title }}</h3>
+        <p class="poem-author">作者：{{ poem.poets }}</p>
+        <div class="poem-content">{{ poem.content }}</div>
+    </div>
+    {% endfor %}
+
+    <!-- 分页部分 -->
+    {% if pagination %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            {% if pagination.has_prev %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('poet_detail', poet=poet, page=pagination.prev_num) }}">&laquo; 上一页</a>
+            </li>
+            {% endif %}
+
+            {% for page in pagination.iter_pages() %}
+                {% if page %}
+                    <li class="page-item {% if page == pagination.page %}active{% endif %}">
+                        <a class="page-link" href="{{ url_for('poet_detail', poet=poet, page=page) }}">{{ page }}</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if pagination.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('poet_detail', poet=poet, page=pagination.next_num) }}">下一页 &raquo;</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+
+<style>
+    .poems-container {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 2rem;
+        margin: 2rem auto;
+        max-width: 1200px;
+    }
+
+    .poet-info-card {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 2rem;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+    }
+
+    .poet-name {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        color: #333;
+    }
+
+    .poet-meta {
+        margin-bottom: 1rem;
+    }
+
+    .poet-meta span {
+        margin-right: 2rem;
+        color: #666;
+    }
+
+    .poet-description {
+        line-height: 1.8;
+        color: #444;
+    }
+
+    .poem-card {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(5px);
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .poem-card:hover {
+        background: rgba(255, 255, 255, 0.25);
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .poem-title {
+        font-size: 1.25rem;
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+
+    .poem-author {
+        color: #666;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .poem-content {
+        color: #444;
+        line-height: 1.6;
+        white-space: pre-wrap;
+    }
+
+    .pagination {
+        margin-top: 2rem;
+        justify-content: center;
+    }
+
+    .page-link {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.3);
+        color: #333;
+    }
+
+    .page-link:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+</style>
+{% endblock %} 
