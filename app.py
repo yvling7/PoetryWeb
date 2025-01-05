@@ -3,7 +3,7 @@ from TangPoetryVisual import TangPoetryVisual
 import pandas as pd
 from utils.pagination import Pagination
 #from EmotionAnalyzer import EmotionAnalyzer
-from gensim.models import Word2Vec
+from gensim.models import KeyedVectors
 from word2vec import find_similar_words
 from SklearnModel import EmotionAnalyzer
 
@@ -16,7 +16,7 @@ poets_df = pd.read_csv('data/poets_df.csv', encoding='utf-8')
 poet_counts = pd.read_csv('data/poet_stats_cache.csv')
 vis = TangPoetryVisual()
 analyzer = EmotionAnalyzer()
-word2vec_model = Word2Vec.load('models/word_vectors.model')
+word2vec_model = KeyedVectors.load('models/word_vectors.model')
 
 # 加载字频数据
 char_frequency = pd.read_csv('data/char_frequency.csv')
