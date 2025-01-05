@@ -1,6 +1,6 @@
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
-from gensim.models import Word2Vec
+from gensim.models import KeyedVectors
 import json
 from sklearn.neural_network import MLPClassifier  # 导入神经网络分类器
 from sklearn.model_selection import train_test_split  # 导入训练集和测试集划分工具
@@ -18,7 +18,7 @@ class EmotionAnalyzer:
     
     def load_word2vec(self, model_path='models/word_vectors.model'):
         """加载Word2Vec模型"""
-        self.word2vec_model = Word2Vec.load(model_path)
+        self.word2vec_model = KeyedVectors.load(model_path)
     
     def load_training_data(self, data_path='data/train.json'):
         """加载训练数据"""
@@ -121,7 +121,7 @@ class EmotionAnalyzer:
             self.label_encoder = pickle.load(f)
             
         # 加载Word2Vec模型
-        self.word2vec_model = Word2Vec.load(word2vec_path)
+        self.word2vec_model = KeyedVectors.load(word2vec_path)
 
 if __name__ == "__main__":
     # 使用示例：
